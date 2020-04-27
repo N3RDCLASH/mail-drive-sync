@@ -73,7 +73,7 @@ function handleMail(mail) {
         return;
     }
     else {
-        if (email_text.includes("#LUCRUM_BOT_START#")) {
+        if (email_text.includes("#BOT_START#")) {
             console.log("[😎] PROCESSING ORDER");
             saveOrder(email_text);
         }
