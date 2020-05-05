@@ -1,7 +1,7 @@
 # Mail-Drive-Sync
 A Node app that listens to incoming mail from my school and auto uploads the attachments to google drive.
 
-Based on [**tradingview-mail-watcher**](https://github.com/pawiromitchel/tradingview-mail-watche) by [Mitchel Pawirodinomo](ttps://github.com/pawiromitchel/)
+Based on [**tradingview-mail-watcher**](https://github.com/pawiromitchel/tradingview-mail-watche) by [Mitchel Pawirodinomo](https://github.com/pawiromitchel/)
 
 
 
