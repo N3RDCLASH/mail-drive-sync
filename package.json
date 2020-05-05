@@ -1,19 +1,27 @@
 {
-  "name": "TradingViewMailFetcher",
+  "name": "maildrivesync",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Node app that listens to incoming mail from my school and auto uploads the attachments to google drive.",
   "main": "index.js",
   "scripts": {
     "start": "nodemon nvm use node && node app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Joel Naarendorp",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
     "googleapis": "^39.2.0",
     "mail-listener2-updated": "^0.3.3",
-    "mysql": "^2.18.1",
     "nodemon": "^2.0.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/N3RDCLASH/mail-drive-sync.git"
+  },
+  "bugs": {
+    "url": "https://github.com/N3RDCLASH/mail-drive-sync/issues"
+  },
+  "homepage": "https://github.com/N3RDCLASH/mail-drive-sync#readme"
 }
