@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nvm use node && node app.js"
+    "start": "nodemon nvm use node && node app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "googleapis": "^39.2.0",
     "mail-listener2-updated": "^0.3.3",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.3"
   }
 }

@@ -1,33 +1,28 @@
 const adminConfig = require('./config').adminConfig;
+const fs = require('fs');
+const { google } = require('googleapis');
+
+//google drive token path 
+const TOKEN_PATH = 'token.json';
+
 
 let runningMailHandler = false;
 
-// REGEX to parse the email
-const pair = /(?<=#PAIR#)(.*?)(?=#PAIR#)/mg;
-const orderType = /(?<=#ORDER#)(.*?)(?=#ORDER#)/mg;
-const tp = /(?<=#TP#)(.*?)(?=#TP#)/mg;
-const sl = /(?<=#SL#)(.*?)(?=#SL#)/mg;
+//TODO:Code Clean-Up 
 
 // order array
 let id = 0;
-let orders = [];
+let emails = [];
 
 /**
  * send the oder to whereever
  * @param {*} emailText 
  */
-function saveOrder(emailText) {
+function saveEmail(emailText) {
     let trade = {}
-
-    trade.id = id++;
-    trade.type = emailText.match(orderType)[0] == "1" ? "BUY" : "SELL";
-    trade.ticker = emailText.match(pair)[0];
-    trade.take_profit = emailText.match(tp)[0];
-    trade.stop_loss = emailText.match(sl)[0];
-    trade.date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-    // add the order
-    orders.push(trade);
+    trade.email_text = emailText
+    
+    emails.push(trade);
 }
 
 /**
@@ -57,9 +52,9 @@ function handleMail(mail) {
     else if (mail.html) {
         email_text = mail.html
     }
-    // E-Mail not from TradingView
-    if (mail.from[0].address.toString() !== adminConfig.tradingview.mail) {
-        console.log(`Email received from ${mail.from[0].address.toString()}. Ignoring since sender not TradingView.`);
+    // E-Mail not from Natin
+    if (mail.from[0].address.toString() !== adminConfig.natin.mail) {
+        console.log(`Email received from ${mail.from[0].address.toString()}. Ignoring since sender not Natin.`);
         return;
     }
     // Old email -  do nothing
@@ -73,11 +68,61 @@ function handleMail(mail) {
         return;
     }
     else {
-        if (email_text.includes("#BOT_START#")) {
-            console.log("[😎] PROCESSING ORDER");
-            saveOrder(email_text);
+        if (mail.attachments) {
+            const attachments = mail.attachments
+
+            fs.readFile('credentials.json', (err, content) => {
+                if (err) return console.log('Error loading client secret file:', err);
+
+                // Authorize a client with credentials, then call the Google Drive API.
+                let credentials = JSON.parse(content)
+                const { client_secret, client_id, redirect_uris } = credentials.installed;
+                const oAuth2Client = new google.auth.OAuth2(
+                    client_id, client_secret, redirect_uris[0]);
+
+                //check if token is already stored
+                fs.readFile(TOKEN_PATH, (err, token) => {
+                    if (err) return getAccessToken(oAuth2Client, callback);
+                    oAuth2Client.setCredentials(JSON.parse(token));
+                    //upload each seperate attachement
+                    for (const file of attachments) {
+                        uploadFile(oAuth2Client, file)
+                    }
+                });
+
+
+            })
+
         }
+        saveEmail(email_text);
+
     }
 }
 
-module.exports = { runOneAtATime, orders }
+// upload file 
+function uploadFile(auth, mail) {
+    const { fileName, contentType, path } = mail
+    const drive = google.drive({ version: 'v3', auth });
+
+    var fileMetadata = {
+        'name': fileName
+    };
+    var media = {
+        mimeType: contentType,
+        body: fs.createReadStream(path)
+    };
+    drive.files.create({
+        resource: fileMetadata,
+        media: media,
+        fields: 'id'
+    }, function (err, file) {
+        if (err) {
+            // Handle error
+            console.error(err);
+        } else {
+            console.log('File Id: ', file.id);
+        }
+    });
+
+}
+module.exports = { runOneAtATime, orders: emails }

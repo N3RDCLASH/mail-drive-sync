@@ -9,7 +9,11 @@ const adminConfig = {
     },
     'tradingview': {
         'mail': 'noreply@tradingview.com'
+    },
+    'natin': {
+        'mail': 'joel.naarendorp.natin@gmail.com'
     }
+
 }
 
 const mailConfig = {
@@ -21,6 +25,8 @@ const mailConfig = {
     tlsOptions: { rejectUnauthorized: false },
     mailbox: "INBOX", // mailbox to monitor
     markSeen: false, // all fetched email willbe marked as seen and not fetched next time
+    attachments: true,
+    attachmentOptions: { directory: "attachments/" }
 }
 
 module.exports = { adminConfig, mailConfig }

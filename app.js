@@ -7,11 +7,15 @@ const port = 3000
 
 // list all orders
 app.get('/', (req, res) => res.send("Hello stranger ..."));
-app.get('/orders/latest', (req, res) => res.send(shared.orders[shared.orders.length - 1]));
-app.get('/orders/all', (req, res) => res.send(shared.orders));
+// app.get('/orders/latest', (req, res) => res.send(shared.orders[shared.orders.length - 1]));
+// app.get('/orders/all', (req, res) => res.send(shared.orders));
+app.get('/natin/all', (req, res) => res.send(shared.orders));
+
+
+
 
 // start the express server
-app.listen(port, () => console.log(`TradingView Mail Listener running @ http://localhost:${port}`))
+app.listen(port, () => console.log(`Natin Mail Listener running @ http://localhost:${port}`))
 
 const mailListener = new MailListener(mailConfig);
 mailListener.start(); // start listening
