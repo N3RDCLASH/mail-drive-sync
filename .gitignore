@@ -1,5 +1,7 @@
-node_modules/
+.env
 credentials.json
 client_id.json
-token.json
 config.txt
+token.json
+todo.md
+node_modules/
