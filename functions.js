@@ -1,6 +1,7 @@
 const adminConfig = require('./config').adminConfig;
 const fs = require('fs');
 const { google } = require('googleapis');
+const contacts = require('./contacts.js')
 
 //google drive token path 
 const TOKEN_PATH = 'token.json';
@@ -21,7 +22,6 @@ let emails = [];
 function saveEmail(emailText) {
     let trade = {}
     trade.email_text = emailText
-    
     emails.push(trade);
 }
 
@@ -42,9 +42,10 @@ function runOneAtATime(mail) {
 
 /**
  * Handle new incoming emails
- * @param mail
+ * @param mail the incoming mail object
  */
 function handleMail(mail) {
+
     var email_text = ""
     if (mail.text) {
         email_text = mail.text
@@ -53,7 +54,7 @@ function handleMail(mail) {
         email_text = mail.html
     }
     // E-Mail not from Natin
-    if (mail.from[0].address.toString() !== adminConfig.natin.mail) {
+    if (!contacts.natin.find(contact => contact.email === mail.from[0].address.toString())) {
         console.log(`Email received from ${mail.from[0].address.toString()}. Ignoring since sender not Natin.`);
         return;
     }
@@ -70,10 +71,9 @@ function handleMail(mail) {
     else {
         if (mail.attachments) {
             const attachments = mail.attachments
-
+            //read credentials
             fs.readFile('credentials.json', (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
-
                 // Authorize a client with credentials, then call the Google Drive API.
                 let credentials = JSON.parse(content)
                 const { client_secret, client_id, redirect_uris } = credentials.installed;
@@ -89,8 +89,6 @@ function handleMail(mail) {
                         uploadFile(oAuth2Client, file)
                     }
                 });
-
-
             })
 
         }
@@ -125,4 +123,5 @@ function uploadFile(auth, mail) {
     });
 
 }
+
 module.exports = { runOneAtATime, orders: emails }
