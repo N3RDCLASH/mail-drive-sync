@@ -2,6 +2,7 @@ const adminConfig = require('./config').adminConfig;
 const fs = require('fs');
 const { google } = require('googleapis');
 const contacts = require('./contacts.js')
+require('dotenv').config()
 
 //google drive token path 
 const TOKEN_PATH = 'token.json';
@@ -71,25 +72,21 @@ function handleMail(mail) {
     else {
         if (mail.attachments) {
             const attachments = mail.attachments
-            //read credentials
-            fs.readFile('credentials.json', (err, content) => {
-                if (err) return console.log('Error loading client secret file:', err);
-                // Authorize a client with credentials, then call the Google Drive API.
-                let credentials = JSON.parse(content)
-                const { client_secret, client_id, redirect_uris } = credentials.installed;
-                const oAuth2Client = new google.auth.OAuth2(
-                    client_id, client_secret, redirect_uris[0]);
 
-                //check if token is already stored
-                fs.readFile(TOKEN_PATH, (err, token) => {
-                    if (err) return getAccessToken(oAuth2Client, callback);
-                    oAuth2Client.setCredentials(JSON.parse(token));
-                    //upload each seperate attachement
-                    for (const file of attachments) {
-                        uploadFile(oAuth2Client, file)
-                    }
-                });
-            })
+            //read credentials
+            const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+            const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+            //check if token is already stored
+            fs.readFile(TOKEN_PATH, (err, token) => {
+                if (err) return getAccessToken(oAuth2Client, callback);
+                oAuth2Client.setCredentials(JSON.parse(token));
+                //upload each seperate attachement
+                for (const file of attachments) {
+                    uploadFile(oAuth2Client, file)
+                }
+            });
+
 
         }
         saveEmail(email_text);
@@ -98,8 +95,8 @@ function handleMail(mail) {
 }
 
 // upload file 
-function uploadFile(auth, mail) {
-    const { fileName, contentType, path } = mail
+function uploadFile(auth, file) {
+    const { fileName, contentType, path } = file
     const drive = google.drive({ version: 'v3', auth });
 
     var fileMetadata = {
@@ -118,6 +115,7 @@ function uploadFile(auth, mail) {
             // Handle error
             console.error(err);
         } else {
+            console.log(file)
             console.log('File Id: ', file.id);
         }
     });
