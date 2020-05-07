@@ -27,6 +27,6 @@ Based on [**tradingview-mail-watcher**](https://github.com/pawiromitchel/trading
 
 > none currently.
 
-## Features to implemented
+## Features to be implemented
 - Mail sorting by subject.
 - Uploading to specific folders.
