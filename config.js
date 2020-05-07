@@ -11,7 +11,7 @@ const adminConfig = {
         'mail': 'noreply@tradingview.com'
     },
     'natin': {
-        'mail': 'joel.naarendorp.natin@gmail.com'
+        'emails': ['joel.naarendorp.natin@gmail.com']
     }
 
 }
